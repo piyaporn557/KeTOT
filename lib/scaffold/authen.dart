@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ketot/scaffold/register.dart';
+import 'package:ketot/utility/my_style.dart';
 
 class Authen extends StatefulWidget {
   @override
@@ -19,7 +21,7 @@ class _AuthenState extends State<Authen> {
   Widget signInButton() {
     return RaisedButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-      color: Colors.cyan.shade700,
+      color: MyStyle().mainColor,
       child: Text(
         'Sing In',
         style: TextStyle(color: Colors.white),
@@ -32,7 +34,12 @@ class _AuthenState extends State<Authen> {
     return OutlineButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Text('Sing Up'),
-      onPressed: () {},
+      onPressed: () {
+        print('You Clisk Sign Up');
+
+       MaterialPageRoute materialPageRoute = MaterialPageRoute(builder: (BuildContext buildContext){return Register();});
+       Navigator.of(context).push(materialPageRoute);
+      },
     );
   }
 
@@ -76,12 +83,12 @@ class _AuthenState extends State<Authen> {
 
   Widget showAppName() {
     return Text(
-      'Ke TOT',
+      'เก๋เองจ้า',
       style: TextStyle(
         fontSize: 24.0,
         fontWeight: FontWeight.bold,
         fontStyle: FontStyle.italic,
-        color: Colors.green.shade600,
+        color: MyStyle().texeColor,
         fontFamily: 'Oswald',
       ),
     );
@@ -93,7 +100,7 @@ class _AuthenState extends State<Authen> {
       body: Container(
         decoration: BoxDecoration(
             gradient: RadialGradient(
-          colors: <Color>[Colors.white, Colors.blue.shade700],
+          colors: <Color>[Colors.white, Colors.cyan.shade700],
           radius: 1.0,
         )),
         child: Center(
