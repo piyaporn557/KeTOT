@@ -10,6 +10,13 @@ class _RegisterState extends State<Register> {
   // Field
 
   // Method
+    Widget mySizebox() {
+    return SizedBox(
+      width: 5.0,
+      height: 16.0,
+    );
+  }
+
   Widget nameForm() {
     Color color = Colors.purple;
 
@@ -148,6 +155,7 @@ class _RegisterState extends State<Register> {
       ),
       body: ListView(
         children: <Widget>[
+          mySizebox(),
           showAvatar(),
           showButton(),
           nameForm(),
