@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ketot/utility/my_style.dart';
 
 class Register extends StatefulWidget {
@@ -8,9 +11,10 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   // Field
+  File file; //สร้างตัวแปลรองรับimage
 
   // Method
-    Widget mySizebox() {
+  Widget mySizebox() {
     return SizedBox(
       width: 5.0,
       height: 16.0,
@@ -102,15 +106,31 @@ class _RegisterState extends State<Register> {
     return OutlineButton.icon(
       icon: Icon(Icons.add_a_photo),
       label: Text('Camara'),
-      onPressed: () {},
+      onPressed: () {
+        camaraAndGalleryThread(ImageSource.camera);
+      },
     );
+  }
+
+  Future<void> camaraAndGalleryThread(ImageSource imageSource) async {
+    var objact = await ImagePicker.pickImage(
+      source: imageSource,
+      maxWidth: 800.0,
+      maxHeight: 600.0,
+    );
+
+    setState(() {
+      file = objact;
+    });
   }
 
   Widget galleryButton() {
     return OutlineButton.icon(
       icon: Icon(Icons.add_a_photo),
       label: Text('Gallery'),
-      onPressed: () {},
+      onPressed: () {
+        camaraAndGalleryThread(ImageSource.gallery);
+      },
     );
   }
 
@@ -128,10 +148,11 @@ class _RegisterState extends State<Register> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.4,
       width: MediaQuery.of(context).size.width * 0.9,
-      child: Image.asset(
-        'images/avatar.png',
-        fit: BoxFit.contain,
-      ),
+      child: file == null ? Image.asset(
+              'images/avatar.png',
+              fit: BoxFit.contain,
+            )
+          : Image.file(file),
     );
   }
 
