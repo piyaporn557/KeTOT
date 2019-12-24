@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -15,7 +16,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   // Field
   File file; //สร้างตัวแปลรองรับimage
-  String name, user, password;
+  String name, user, password, avatar;
   final formKey = GlobalKey<FormState>();
 
   // Method
@@ -200,7 +201,11 @@ class _RegisterState extends State<Register> {
     String namePicture = 'avatar$i.jpg';
     print('namePicture = $namePicture');
 
-    String urlAPI = 'https://www.androidthai.in.th/tot/saveFileKea.php';
+    avatar = 'http://androidthai.in.th/tot/kea/$namePicture';
+
+    String urlAPI = 'http://androidthai.in.th/tot/saveFileKea.php';
+
+    
 
     try {
       Map<String, dynamic> map = Map();
@@ -210,9 +215,34 @@ class _RegisterState extends State<Register> {
       Response response = await Dio().post(urlAPI, data: formData);
       print('response = $response');
 
+      var result = response.data;
+      String string = result['message'];
+      print('string = $string');
+
+      if (string == 'File uploaded successfully') {
+        insertDataMySQL();
+        
+      } else {
+        print('Cannot Upload');
+      }
+
     } catch (e) {
     }
 
+  }
+
+  Future<void> insertDataMySQL()async{
+    String url = 'http://androidthai.in.th/tot/addDatakea.php?isAdd=true&Name=$name&User=$user&Password=$password&Avata=$avatar';
+
+    Response response = await Dio().get(url);
+    var result = response.data;
+    print('result = $result');
+
+    if (result.toString() == 'true') {
+      Navigator.of(context).pop();
+    } else {
+      normalDialog(context, 'Can not register', 'กรุณาลองใหม่อีกครั้ง');
+    }
   }
 
   @override
