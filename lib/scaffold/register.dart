@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ketot/utility/my_style.dart';
+import 'package:ketot/utility/normal_diaalog.dart';
+import 'package:dio/dio.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -12,6 +15,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   // Field
   File file; //สร้างตัวแปลรองรับimage
+  String name, user, password;
+  final formKey = GlobalKey<FormState>();
 
   // Method
   Widget mySizebox() {
@@ -29,7 +34,9 @@ class _RegisterState extends State<Register> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          child: TextFormField(
+          child: TextFormField(onSaved: (String string){
+            name = string.trim();
+          },
             decoration: InputDecoration(
               hintText: 'English Only',
               helperText: 'Type Your Name in Blank',
@@ -56,7 +63,9 @@ class _RegisterState extends State<Register> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          child: TextFormField(
+          child: TextFormField(onSaved: (String string){
+            user = string.trim();
+          },
             decoration: InputDecoration(
               hintText: 'English Only',
               helperText: 'Type Your User in Blank',
@@ -83,7 +92,9 @@ class _RegisterState extends State<Register> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          child: TextFormField(
+          child: TextFormField(onSaved: (String string){
+            password = string.trim();
+          },
             decoration: InputDecoration(
               hintText: 'more 6 Charactor',
               helperText: 'Type Your Password in Blank',
@@ -148,7 +159,8 @@ class _RegisterState extends State<Register> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.4,
       width: MediaQuery.of(context).size.width * 0.9,
-      child: file == null ? Image.asset(
+      child: file == null
+          ? Image.asset(
               'images/avatar.png',
               fit: BoxFit.contain,
             )
@@ -160,8 +172,47 @@ class _RegisterState extends State<Register> {
     return IconButton(
       icon: Icon(Icons.cloud_upload),
       tooltip: 'Upload to Server',
-      onPressed: () {},
+      onPressed: () {
+
+        formKey.currentState.save();
+
+        if (file == null) {
+          normalDialog(
+              context, 'ยังไม่เลือกรูปภาพ', 'กรุณาเลือกรูปภาพในแกลรี่');
+        } 
+        else if (name.isEmpty) {
+          normalDialog(context, 'Name Blanh', 'Please type Your Name');
+        }else if (user.isEmpty) {
+          normalDialog(context, 'User Blanh', 'Please type Your User');
+        }else if (password.length <= 5) {
+           normalDialog(context, 'Password Weak', 'Please type Password More 6 Charactor');
+        } else {
+          uploadPictureToServer();
+        } 
+      },
     );
+  }
+
+  Future<void> uploadPictureToServer()async{
+
+    Random random = Random();
+    int i = random.nextInt(10000);
+    String namePicture = 'avatar$i.jpg';
+    print('namePicture = $namePicture');
+
+    String urlAPI = 'https://www.androidthai.in.th/tot/saveFileKea.php';
+
+    try {
+      Map<String, dynamic> map = Map();
+      map['file'] = UploadFileInfo(file, namePicture);
+      FormData formData = FormData.from(map);
+
+      Response response = await Dio().post(urlAPI, data: formData);
+      print('response = $response');
+
+    } catch (e) {
+    }
+
   }
 
   @override
@@ -174,15 +225,18 @@ class _RegisterState extends State<Register> {
         backgroundColor: MyStyle().mainColor,
         title: Text('Register'),
       ),
-      body: ListView(
-        children: <Widget>[
-          mySizebox(),
-          showAvatar(),
-          showButton(),
-          nameForm(),
-          userForm(),
-          passwordForm(),
-        ],
+      body: Form(
+        key: formKey,
+        child: ListView(
+          children: <Widget>[
+            mySizebox(),
+            showAvatar(),
+            showButton(),
+            nameForm(),
+            userForm(),
+            passwordForm(),
+          ],
+        ),
       ),
     );
   }
