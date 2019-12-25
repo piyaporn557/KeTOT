@@ -15,7 +15,7 @@ class MyService extends StatefulWidget {
 class _MyServiceState extends State<MyService> {
   // Field
   UserModel myUserModel;
-  Widget currentwidget = ShowListProduct();
+  Widget currentwidget;
 
   // Method
   @override
@@ -23,6 +23,7 @@ class _MyServiceState extends State<MyService> {
     super.initState();
     myUserModel = widget.userModel;
     print('NameLogin = ${myUserModel.name}');
+    currentwidget = ShowListProduct(userModel: myUserModel,);
   }
 
   Widget menuShowList() {
